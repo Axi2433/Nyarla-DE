@@ -1,0 +1,18 @@
+# Update the system
+sudo dnf update -y
+
+# Install Rust (if not already installed)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+# Source the Rust environment (or restart your terminal)
+source ~/.cargo/env
+
+# Install all Wayland and development dependencies
+sudo dnf install -y \
+    rust cargo \
+    gcc gcc-c++ make cmake \
+    wayland-devel wayland-protocols-devel \
+    libx11-devel libxext-devel libxfixes-devel \
+    libxrender-devel libxrandr-devel libxcursor-devel \
+    libxi-devel libxinerama-devel \
+    mesa-libGL-devel mesa-libEGL-devel libdrm-devel

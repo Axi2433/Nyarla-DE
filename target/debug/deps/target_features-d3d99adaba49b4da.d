@@ -1,0 +1,13 @@
+/home/Axi/Desktop/Nyarla DE/target/debug/deps/target_features-d3d99adaba49b4da.d: /home/Axi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/target-features-0.1.6/src/lib.rs /home/Axi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/target-features-0.1.6/src/simd.rs /home/Axi/Desktop/Nyarla\ DE/target/debug/build/target-features-1eeeb2983339fdb2/out/generated.md /home/Axi/Desktop/Nyarla\ DE/target/debug/build/target-features-1eeeb2983339fdb2/out/generated.rs /home/Axi/Desktop/Nyarla\ DE/target/debug/build/target-features-1eeeb2983339fdb2/out/docs.rs
+
+/home/Axi/Desktop/Nyarla DE/target/debug/deps/libtarget_features-d3d99adaba49b4da.rlib: /home/Axi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/target-features-0.1.6/src/lib.rs /home/Axi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/target-features-0.1.6/src/simd.rs /home/Axi/Desktop/Nyarla\ DE/target/debug/build/target-features-1eeeb2983339fdb2/out/generated.md /home/Axi/Desktop/Nyarla\ DE/target/debug/build/target-features-1eeeb2983339fdb2/out/generated.rs /home/Axi/Desktop/Nyarla\ DE/target/debug/build/target-features-1eeeb2983339fdb2/out/docs.rs
+
+/home/Axi/Desktop/Nyarla DE/target/debug/deps/libtarget_features-d3d99adaba49b4da.rmeta: /home/Axi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/target-features-0.1.6/src/lib.rs /home/Axi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/target-features-0.1.6/src/simd.rs /home/Axi/Desktop/Nyarla\ DE/target/debug/build/target-features-1eeeb2983339fdb2/out/generated.md /home/Axi/Desktop/Nyarla\ DE/target/debug/build/target-features-1eeeb2983339fdb2/out/generated.rs /home/Axi/Desktop/Nyarla\ DE/target/debug/build/target-features-1eeeb2983339fdb2/out/docs.rs
+
+/home/Axi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/target-features-0.1.6/src/lib.rs:
+/home/Axi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/target-features-0.1.6/src/simd.rs:
+/home/Axi/Desktop/Nyarla\ DE/target/debug/build/target-features-1eeeb2983339fdb2/out/generated.md:
+/home/Axi/Desktop/Nyarla\ DE/target/debug/build/target-features-1eeeb2983339fdb2/out/generated.rs:
+/home/Axi/Desktop/Nyarla\ DE/target/debug/build/target-features-1eeeb2983339fdb2/out/docs.rs:
+
+# env-dep:OUT_DIR=/home/Axi/Desktop/Nyarla DE/target/debug/build/target-features-1eeeb2983339fdb2/out
