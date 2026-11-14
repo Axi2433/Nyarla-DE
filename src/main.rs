@@ -14,8 +14,8 @@ fn main() {
     let display = Display::new().unwrap();
     
     // Create our compositor state
-    let compositor_state = CompositorState::new();
-    let xdg_shell_state = XdgShellState::new(&display.handle());
+    let mut window_manager = compositor::manager::WindowManager::new(&display.handle());
+    let mut shell_state = compositor::shell::ShellState::new(&display.handle());
     
     // Initialize the event loop
     let event_loop = EventLoop::try_new().unwrap();
