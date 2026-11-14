@@ -8,8 +8,8 @@ pub struct ShellState {
 }
 
 impl ShellState {
-    pub fn new() -> Self {
-        let xdg_shell_state = XdgShellState::new();
+    pub fn new(display_handle: &DisplayHandle) -> Self {
+        let xdg_shell_state = XdgShellState::new(display_handle);
         ShellState { xdg_shell_state }
     }
 }
