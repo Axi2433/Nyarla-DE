@@ -65,10 +65,10 @@ impl MenuComponent {
             [0.1, 0.2, 0.4, 0.7] // Darker blue when inactive
         };
         
-        frame.render_rect(
-            self.position,
-            self.size,
-            color,
+        frame.draw_solid(
+            dst_rect,                          // Rectangle<i32, Physical>: gdzie rysujesz
+            &[Rectangle::from_size(dst_rect.size)], // damage, względem dst
+            Color32F::new(r, g, b, a),         // kolor
         )?;
         
         // Render visual effects

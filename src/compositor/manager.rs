@@ -1,5 +1,5 @@
 use smithay::{
-    backend::renderer::{Frame, ImportAll, Renderer, Texture},
+    backend::renderer::{Color32F, Frame, ImportAll, Renderer},
     delegate_compositor, delegate_seat, delegate_xdg_shell,
     input::{Seat, SeatHandler, SeatState},
     reexports::wayland_server::{
@@ -7,7 +7,7 @@ use smithay::{
         protocol::{wl_seat, wl_surface::WlSurface},
         Client, DisplayHandle,
     },
-    utils::{Point, Size},
+    utils::{Logical, Physical, Point, Rectangle, Serial, Size},
     wayland::{
         compositor::{CompositorClientState, CompositorHandler, CompositorState},
         shell::xdg::{
@@ -15,9 +15,9 @@ use smithay::{
         },
     },
 };
-use smithay::utils::Serial;
-use crate::renderer::visualizer::Visualizer;
+
 use super::menu_component::MenuComponent;
+use crate::renderer::visualizer::Visualizer;
 
 pub struct CompositorManager {
     pub compositor_state: CompositorState,
@@ -25,7 +25,7 @@ pub struct CompositorManager {
     pub seat_state: SeatState<Self>,
     pub seat: Seat<Self>,
     pub visualizer: Visualizer,
-    pub output_size: Size<i32, smithay::utils::Logical>,
+    pub output_size: Size<i32, Logical>,
     pub menu_components: Vec<MenuComponent>,
 }
 
@@ -50,45 +50,43 @@ impl CompositorManager {
             seat_state,
             seat,
             visualizer: Visualizer::new(),
-            output_size: Size::from((1920, 1080)), // Default size
+            output_size: Size::from((1920, 1080)), // domyślny rozmiar
             menu_components: Vec::new(),
         }
     }
-    
-    pub fn set_output_size(&mut self, size: Size<i32, smithay::utils::Logical>) {
+
+    pub fn set_output_size(&mut self, size: Size<i32, Logical>) {
         self.output_size = size;
     }
-    
+
     pub fn update(&mut self, delta_time: std::time::Duration) {
         self.visualizer.update(delta_time);
     }
-    
+
     pub fn render<R: Renderer + ImportAll>(
         &mut self,
         renderer: &mut R,
         frame: &mut R::Frame<'_, '_>,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        // Clear the frame
-        frame.clear(
-            [0.0, 0.0, 0.0, 1.0], // Black background
-            &[],
-        )?;
-        
-        // Render visual effects
+        // Obszar do wyczyszczenia: cały ekran
+        let full: Rectangle<i32, Physical> = Rectangle::from_size(Size::from((
+            self.output_size.w,
+            self.output_size.h,
+        )));
+
+        // Czarne tło
+        frame.clear(Color32F::new(0.0, 0.0, 0.0, 1.0), &[full])?;
+
+        // Efekty wizualne
         self.visualizer.render(renderer, frame, self.output_size)?;
-        
+
         Ok(())
     }
-    
-    pub fn add_laser_edge(
-        &mut self,
-        start: Point<i32, smithay::utils::Logical>,
-        end: Point<i32, smithay::utils::Logical>,
-        width: i32,
-    ) {
+
+    pub fn add_laser_edge(&mut self, start: Point<i32, Logical>, end: Point<i32, Logical>, width: i32) {
         self.visualizer.add_laser_edge(start, end, width);
     }
-    
+
     pub fn add_menu_component(&mut self, menu: MenuComponent) {
         self.menu_components.push(menu);
     }

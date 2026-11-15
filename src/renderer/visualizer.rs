@@ -179,11 +179,11 @@ impl Visualizer {
                              (edge.end.y as f64 - edge.start.y as f64).powi(2)).sqrt();
                 
                 // Render a line with glow effect
-                frame.render_rect(
-                    Point::from((edge.start.x, edge.start.y)),
-                    Size::from((length as i32, edge.width)),
-                    color,
-                )?;
+              frame.draw_solid(
+                dst_rect,                          // Rectangle<i32, Physical>: gdzie rysujesz
+                &[Rectangle::from_size(dst_rect.size)], // damage, względem dst
+                Color32F::new(r, g, b, a),         // kolor
+            )?;
             }
         }
         

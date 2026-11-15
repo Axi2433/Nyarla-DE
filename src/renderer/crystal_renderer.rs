@@ -111,10 +111,10 @@ impl CrystalRenderer {
                 let color = effect.color;
                 
                 // Create a diamond-like shape with gradient effect
-                frame.render_rect(
-                    effect.position,
-                    effect.size,
-                    color,
+                frame.draw_solid(
+                    dst_rect,                          // Rectangle<i32, Physical>: gdzie rysujesz
+                    &[Rectangle::from_size(dst_rect.size)], // damage, względem dst
+                    Color32F::new(r, g, b, a),         // kolor
                 )?;
             }
         }
