@@ -15,7 +15,9 @@ use smithay::{
         },
     },
 };
+use smithay::utils::Serial;
 use crate::renderer::visualizer::Visualizer;
+use super::menu_component::MenuComponent;
 
 pub struct CompositorManager {
     pub compositor_state: CompositorState,
@@ -24,6 +26,7 @@ pub struct CompositorManager {
     pub seat: Seat<Self>,
     pub visualizer: Visualizer,
     pub output_size: Size<i32, smithay::utils::Logical>,
+    pub menu_components: Vec<MenuComponent>,
 }
 
 #[derive(Default)]
@@ -48,6 +51,7 @@ impl CompositorManager {
             seat,
             visualizer: Visualizer::new(),
             output_size: Size::from((1920, 1080)), // Default size
+            menu_components: Vec::new(),
         }
     }
     
@@ -62,7 +66,7 @@ impl CompositorManager {
     pub fn render<R: Renderer + ImportAll>(
         &mut self,
         renderer: &mut R,
-        frame: &mut Frame<'_, R::TextureId>,
+        frame: &mut R::Frame<'_, '_>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         // Clear the frame
         frame.clear(
@@ -85,12 +89,8 @@ impl CompositorManager {
         self.visualizer.add_laser_edge(start, end, width);
     }
     
-    pub fn add_crystal_effect(
-        &mut self,
-        position: Point<i32, smithay::utils::Logical>,
-        max_size: Size<i32, smithay::utils::Logical>,
-    ) {
-        self.visualizer.add_crystal_effect(position, max_size);
+    pub fn add_menu_component(&mut self, menu: MenuComponent) {
+        self.menu_components.push(menu);
     }
 }
 

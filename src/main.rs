@@ -6,10 +6,11 @@ use std::{sync::Arc, time::Duration};
 use smithay::reexports::calloop::EventLoop;
 use smithay::reexports::wayland_server::Display;
 use smithay::wayland::socket::ListeningSocketSource;
-use smithay::backend::renderer::{Frame, ImportAll, Renderer, Texture};
+use smithay::utils::{Point, Size};
 use smithay::utils::{Point, Size};
 
 use compositor::manager::CompositorManager;
+use compositor::manager::ClientState;
 use compositor::menu_component::MenuComponent;
 
 fn main() {
