@@ -2,7 +2,7 @@ mod compositor;
 
 use std::{sync::Arc, time::Duration};
 
-use calloop::EventLoop;
+use smithay::reexports::calloop::EventLoop;
 use smithay::reexports::wayland_server::Display;
 use smithay::wayland::socket::ListeningSocketSource;
 

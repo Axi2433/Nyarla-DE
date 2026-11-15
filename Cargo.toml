@@ -5,5 +5,4 @@ edition = "2021"
 
 [dependencies]
 smithay = "0.7.0"
-calloop = "0.10"
 cgmath = "0.18"
