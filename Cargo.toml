@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 smithay = "0.7.0"
 cgmath = "0.18"
+rand = "0.8"
