@@ -63,7 +63,7 @@ impl CrystalEffect {
         self.opacity = fade_factor as f32 * 0.8;
         
         // Slight scaling animation
-        self.scale = 0.5 + (1.0 - fade_factor) * 0.5;
+        self.scale = (0.5 + (1.0 - fade_factor) * 0.5) as f32;
     }
     
     pub fn is_finished(&self) -> bool {
@@ -102,7 +102,7 @@ impl CrystalRenderer {
     pub fn render<R: Renderer + ImportAll>(
         &mut self,
         renderer: &mut R,
-        frame: &mut Frame<'_, R::TextureId>,
+        frame: &mut R::Frame<'_, '_>,
         output_size: Size<i32, smithay::utils::Logical>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         // Render crystal effects

@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use smithay::{
+    backend::renderer::Color32F,
     delegate_compositor, delegate_seat, delegate_xdg_shell,
     input::{Seat, SeatHandler, SeatState},
     reexports::wayland_server::{
@@ -94,6 +95,16 @@ impl WindowManager {
         }
     }
 
+    // Przykładowa metoda renderująca wykorzystująca frame.clear
+    pub fn render_frame<R, D>(&self, frame: &mut R, damage: &[D]) -> Result<(), R::Error>
+    where
+        R: smithay::backend::renderer::Renderer,
+        D: smithay::backend::renderer::utils::Rectangle<i32, smithay::utils::Local>, // lub odpowiedni typ uszkodzeń (damage)
+    {
+        frame.clear(Color32F::new(0.0, 0.0, 0.0, 1.0), damage)?;
+        Ok(())
+    }
+
     pub fn maximize_window(&mut self, id: u32) {
         if let Some(window) = self.windows.get_mut(&id) {
             window.is_maximized = true;
@@ -146,7 +157,6 @@ impl XdgShellHandler for WindowManager {
 
     fn new_toplevel(&mut self, surface: ToplevelSurface) {
         println!("New toplevel surface created: {:?}", surface);
-        // TODO: utwórz Window i dodaj do self.windows
     }
 
     fn new_popup(&mut self, _surface: PopupSurface, _positioner: PositionerState) {}

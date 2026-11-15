@@ -3,6 +3,7 @@
 use smithay::backend::renderer::{gles::GlesRenderer, Renderer};
 use std::collections::HashMap;
 use crate::renderer::crystal_renderer::CrystalRenderer;
+use super::CrystalRenderer;
 
 /// Visualization configuration
 #[derive(Debug, Clone)]

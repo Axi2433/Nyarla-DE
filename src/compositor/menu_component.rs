@@ -55,7 +55,7 @@ impl MenuComponent {
     pub fn render<R: Renderer + ImportAll>(
         &mut self,
         renderer: &mut R,
-        frame: &mut Frame<'_, R::TextureId>,
+        frame: &mut R::Frame<'_, '_>,
         output_size: Size<i32, smithay::utils::Logical>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         // Render the menu component
