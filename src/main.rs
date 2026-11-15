@@ -7,7 +7,6 @@ use smithay::reexports::calloop::EventLoop;
 use smithay::reexports::wayland_server::Display;
 use smithay::wayland::socket::ListeningSocketSource;
 use smithay::utils::{Point, Size};
-use smithay::utils::{Point, Size};
 
 use compositor::manager::CompositorManager;
 use compositor::manager::ClientState;
