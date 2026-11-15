@@ -1,26 +1,22 @@
-use smithay::{
-    backend::renderer::{Frame, ImportAll, Renderer, Texture},
-    utils::{Point, Size},
-};
 use crate::renderer::{CrystalRenderer, LaserRenderer};
+use smithay::{
+    backend::renderer::{Color32F, Frame, ImportAll, Renderer},
+    utils::{Logical, Physical, Point, Rectangle, Size},
+};
 
 // Menu component with visual effects
 #[derive(Debug)]
 pub struct MenuComponent {
-    pub position: Point<i32, smithay::utils::Logical>,
-    pub size: Size<i32, smithay::utils::Logical>,
+    pub position: Point<i32, Logical>,
+    pub size: Size<i32, Logical>,
     pub label: String,
     pub is_active: bool,
     pub crystal_renderer: CrystalRenderer,
-    pub laser_renderer: LaserRenderer,
+    pub laser_renderer: LaserRenderer, // wymaga #[derive(Debug)] w laser_renderer.rs
 }
 
 impl MenuComponent {
-    pub fn new(
-        position: Point<i32, smithay::utils::Logical>,
-        size: Size<i32, smithay::utils::Logical>,
-        label: String,
-    ) -> Self {
+    pub fn new(position: Point<i32, Logical>, size: Size<i32, Logical>, label: String) -> Self {
         MenuComponent {
             position,
             size,
@@ -30,51 +26,55 @@ impl MenuComponent {
             laser_renderer: LaserRenderer::new(),
         }
     }
-    
+
     pub fn activate(&mut self) {
         self.is_active = true;
-        // Add visual effects when activated
-        self.crystal_renderer.add_crystal_effect(
-            self.position.clone(),
-            self.size.clone()
-        );
-        
-        // Add laser edges around the component
+
+        // Efekt kryształów po aktywacji
+        self.crystal_renderer
+            .add_crystal_effect(self.position, self.size);
+
+        // Laserowa krawędź u góry komponentu
         self.laser_renderer.add_laser_edge(
-            self.position.clone(),
+            self.position,
             Point::from((self.position.x + self.size.w, self.position.y)),
             2,
         );
     }
-    
+
     pub fn update(&mut self, delta_time: std::time::Duration) {
         self.crystal_renderer.update_effects(delta_time);
         self.laser_renderer.update_lasers(delta_time);
     }
-    
+
     pub fn render<R: Renderer + ImportAll>(
         &mut self,
         renderer: &mut R,
         frame: &mut R::Frame<'_, '_>,
-        output_size: Size<i32, smithay::utils::Logical>,
-    ) -> Result<(), Box<dyn std::error::Error>> {
-        // Render the menu component
-        let color = if self.is_active {
-            [0.2, 0.4, 0.8, 0.9] // Blue when active
+        output_size: Size<i32, Logical>,
+    ) -> Result<(), Box<dyn std::error::Error>>
+    where
+        R::Error: 'static,
+    {
+        let [r, g, b, a] = if self.is_active {
+            [0.2, 0.4, 0.8, 0.9] // niebieski, aktywny
         } else {
-            [0.1, 0.2, 0.4, 0.7] // Darker blue when inactive
+            [0.1, 0.2, 0.4, 0.7] // ciemniejszy, nieaktywny
         };
-        
-        frame.draw_solid(
-            dst_rect,                          // Rectangle<i32, Physical>: gdzie rysujesz
-            &[Rectangle::from_size(dst_rect.size)], // damage, względem dst
-            Color32F::new(r, g, b, a),         // kolor
-        )?;
-        
-        // Render visual effects
+
+        let dst = Rectangle::<i32, Physical>::new(
+            Point::from((self.position.x, self.position.y)),
+            Size::from((self.size.w, self.size.h)),
+        );
+
+        // Premultiplikowana alfa
+        let color = Color32F::new(r * a, g * a, b * a, a);
+        frame.draw_solid(dst, &[Rectangle::from_size(dst.size)], color)?;
+
+        // Efekty wizualne
         self.crystal_renderer.render(renderer, frame, output_size)?;
         self.laser_renderer.render(renderer, frame, output_size)?;
-        
+
         Ok(())
     }
 }

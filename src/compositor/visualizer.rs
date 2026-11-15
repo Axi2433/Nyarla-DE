@@ -41,7 +41,7 @@ impl Visualizer {
         end: Point<i32, smithay::utils::Logical>,
         width: i32,
     ) {
-        self.laser_renderer.add_laser_edge(start, end, width);
+        self.laser_renderer.add_laser_edge(start, end, width as u32);
     }
 
     pub fn add_crystal_effect(

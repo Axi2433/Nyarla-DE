@@ -1,14 +1,14 @@
+use super::CrystalRenderer;
 use smithay::{
-    backend::renderer::{Frame, ImportAll, Renderer, Texture},
-    utils::{Point, Size},
+    backend::renderer::{Color32F, Frame, ImportAll, Renderer},
+    utils::{Logical, Physical, Point, Rectangle, Size},
 };
-use std::collections::HashMap;
 
 // Magic laser edge effect for menu components
 #[derive(Debug, Clone)]
 pub struct MagicLaserEdge {
-    pub start: Point<i32, smithay::utils::Logical>,
-    pub end: Point<i32, smithay::utils::Logical>,
+    pub start: Point<i32, Logical>,
+    pub end: Point<i32, Logical>,
     pub width: i32,
     pub color: [f32; 4],
     pub opacity: f32,
@@ -20,16 +20,12 @@ pub struct MagicLaserEdge {
 }
 
 impl MagicLaserEdge {
-    pub fn new(
-        start: Point<i32, smithay::utils::Logical>,
-        end: Point<i32, smithay::utils::Logical>,
-        width: i32,
-    ) -> Self {
+    pub fn new(start: Point<i32, Logical>, end: Point<i32, Logical>, width: i32) -> Self {
         MagicLaserEdge {
             start,
             end,
             width,
-            color: [1.0, 0.5, 0.5, 1.0], // Red magic theme
+            color: [1.0, 0.5, 0.5, 1.0], // czerwony motyw magiczny
             opacity: 1.0,
             pulse: 0.0,
             pulse_speed: 2.0,
@@ -38,29 +34,29 @@ impl MagicLaserEdge {
             is_active: true,
         }
     }
-    
+
     pub fn update(&mut self, delta_time: std::time::Duration) {
         if !self.is_active {
             return;
         }
-        
+
         let elapsed = self.creation_time.elapsed();
         if elapsed > self.duration {
             self.is_active = false;
             return;
         }
-        
-        // Update pulse effect
-        self.pulse += self.pulse_speed * delta_time.as_secs_f64() as f32;
+
+        // Pulsowanie
+        self.pulse += self.pulse_speed * delta_time.as_secs_f32();
         if self.pulse > 1.0 {
             self.pulse = 0.0;
         }
-        
-        // Fade out over time
+
+        // Zanikanie w czasie
         let fade_factor = 1.0 - (elapsed.as_secs_f64() / self.duration.as_secs_f64());
         self.opacity = fade_factor as f32 * 0.8;
     }
-    
+
     pub fn is_finished(&self) -> bool {
         !self.is_active || self.creation_time.elapsed() > self.duration
     }
@@ -81,21 +77,21 @@ impl ColorFilter {
             brightness: 1.0,
         }
     }
-    
+
     pub fn set_red_theme(&mut self) {
         self.red_tint = 1.5;
         self.saturation = 1.2;
         self.brightness = 1.1;
     }
-    
+
     pub fn apply_filter(&self, color: [f32; 4]) -> [f32; 4] {
         let mut filtered = color;
-        
-        // Enhance red tones
+
+        // Wzmocnienie czerwieni; kanały obcięte do 1.0
         filtered[0] = (filtered[0] * self.red_tint).min(1.0);
-        filtered[1] = filtered[1] * self.saturation;
-        filtered[2] = filtered[2] * self.brightness;
-        
+        filtered[1] = (filtered[1] * self.saturation).min(1.0);
+        filtered[2] = (filtered[2] * self.brightness).min(1.0);
+
         filtered
     }
 }
@@ -116,80 +112,78 @@ impl Visualizer {
             enabled: true,
         }
     }
-    
+
     pub fn enable(&mut self) {
         self.enabled = true;
     }
-    
+
     pub fn disable(&mut self) {
         self.enabled = false;
     }
-    
-    pub fn add_laser_edge(
-        &mut self,
-        start: Point<i32, smithay::utils::Logical>,
-        end: Point<i32, smithay::utils::Logical>,
-        width: i32,
-    ) {
+
+    pub fn add_laser_edge(&mut self, start: Point<i32, Logical>, end: Point<i32, Logical>, width: i32) {
         if self.enabled {
             self.laser_edges.push(MagicLaserEdge::new(start, end, width));
         }
     }
-    
-    pub fn add_crystal_effect(
-        &mut self,
-        position: Point<i32, smithay::utils::Logical>,
-        max_size: Size<i32, smithay::utils::Logical>,
-    ) {
+
+    pub fn add_crystal_effect(&mut self, position: Point<i32, Logical>, max_size: Size<i32, Logical>) {
         if self.enabled {
             self.crystal_renderer.add_crystal_effect(position, max_size);
         }
     }
-    
+
     pub fn update(&mut self, delta_time: std::time::Duration) {
-        // Update laser edges
         for edge in &mut self.laser_edges {
             edge.update(delta_time);
         }
-        
-        // Remove finished edges
+
+        // Usuń zakończone krawędzie
         self.laser_edges.retain(|edge| !edge.is_finished());
-        
-        // Update crystal effects
+
         self.crystal_renderer.update_effects(delta_time);
     }
-    
+
     pub fn render<R: Renderer + ImportAll>(
         &mut self,
         renderer: &mut R,
         frame: &mut R::Frame<'_, '_>,
-        output_size: Size<i32, smithay::utils::Logical>,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+        output_size: Size<i32, Logical>,
+    ) -> Result<(), Box<dyn std::error::Error>>
+    where
+        R::Error: 'static,
+    {
         if !self.enabled {
             return Ok(());
         }
-        
-        // Render magic laser edges
+
         for edge in &self.laser_edges {
-            if edge.opacity > 0.0 {
-                let color = self.color_filter.apply_filter(edge.color);
-                
-                // Create a gradient effect for the laser edge
-                let length = ((edge.end.x as f64 - edge.start.x as f64).powi(2) + 
-                             (edge.end.y as f64 - edge.start.y as f64).powi(2)).sqrt();
-                
-                // Render a line with glow effect
-              frame.draw_solid(
-                dst_rect,                          // Rectangle<i32, Physical>: gdzie rysujesz
-                &[Rectangle::from_size(dst_rect.size)], // damage, względem dst
-                Color32F::new(r, g, b, a),         // kolor
-            )?;
+            if edge.opacity <= 0.0 {
+                continue;
             }
+
+            let [r, g, b, a] = self.color_filter.apply_filter(edge.color);
+
+            let dx = (edge.end.x - edge.start.x) as f64;
+            let dy = (edge.end.y - edge.start.y) as f64;
+            let length = (dx * dx + dy * dy).sqrt() as i32;
+
+            // Uwaga: rysujemy prostokąt poziomy od punktu start. Linie ukośne
+            // wymagałyby shadera lub rotacji, więc tu działa tylko poziomo.
+            let dst = Rectangle::<i32, Physical>::new(
+                Point::from((edge.start.x, edge.start.y)),
+                Size::from((length.max(1), edge.width.max(1))),
+            );
+
+            // Premultiplikowana alfa
+            let alpha = (a * edge.opacity).clamp(0.0, 1.0);
+            let color = Color32F::new(r * alpha, g * alpha, b * alpha, alpha);
+
+            frame.draw_solid(dst, &[Rectangle::from_size(dst.size)], color)?;
         }
-        
-        // Render crystal effects
+
         self.crystal_renderer.render(renderer, frame, output_size)?;
-        
+
         Ok(())
     }
 }
