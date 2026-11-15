@@ -1,5 +1,5 @@
 use smithay::{
-    backend::renderer::{Frame, ImportAll, Renderer},
+    backend::renderer::{ImportAll, Renderer},
     utils::{Point, Size},
 };
 use crate::renderer::{CrystalRenderer, LaserRenderer};

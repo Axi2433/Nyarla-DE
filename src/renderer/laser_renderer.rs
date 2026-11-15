@@ -1,6 +1,6 @@
 use smithay::{
-    backend::renderer::{Frame, ImportAll, Renderer, Texture},
-    utils::{Point, Size},
+    backend::renderer::{Color32F, Frame, ImportAll, Renderer},
+    utils::{Logical, Physical, Point, Rectangle, Size},
 };
 
 // Laser edge effect for menu components
@@ -55,6 +55,7 @@ impl LaserEdge {
     }
 }
 
+#[derive(Debug)]
 pub struct LaserRenderer {
     pub laser_edges: Vec<LaserEdge>,
 }
@@ -96,11 +97,16 @@ impl LaserRenderer {
                 let color = edge.color;
                 
                 // Create a line effect with gradient
-                frame.render_rect(
-                    edge.start,
-                    Size::from((edge.width as i32, 1)), // Very thin rectangle to represent line
-                    color,
-                )?;
+                let dst = Rectangle::<i32, Physical>::new(
+                Point::from((x, y)),
+                Size::from((w, h)),
+            );
+            let alpha = (a * opacity).clamp(0.0, 1.0);
+            frame.draw_solid(
+                dst,
+                &[Rectangle::from_size(dst.size)],
+                Color32F::new(r * alpha, g * alpha, b * alpha, alpha),
+            )?;
             }
         }
         

@@ -67,7 +67,10 @@ impl CompositorManager {
         &mut self,
         renderer: &mut R,
         frame: &mut R::Frame<'_, '_>,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    ) -> Result<(), Box<dyn std::error::Error>>
+    where
+        R::Error: 'static,
+    {
         // Obszar do wyczyszczenia: cały ekran
         let full: Rectangle<i32, Physical> = Rectangle::from_size(Size::from((
             self.output_size.w,
