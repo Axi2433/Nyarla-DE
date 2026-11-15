@@ -1,10 +1,7 @@
 mod compositor;
 
 use smithay::reexports::wayland_server::Display;
-
-let mut display: Display<WindowManager> = Display::new().unwrap();
-let mut state = WindowManager::new(&display.handle());
-};
+use compositor::manager::{ClientState, WindowManager};
 use calloop::EventLoop;
 use std::sync::Arc;
 
