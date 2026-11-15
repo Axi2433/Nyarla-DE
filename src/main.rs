@@ -1,24 +1,39 @@
 mod compositor;
 
-use smithay::reexports::wayland_server::Display;
-use compositor::manager::{ClientState, WindowManager};
+use std::{sync::Arc, time::Duration};
+
 use calloop::EventLoop;
-use std::sync::Arc;
+use smithay::reexports::wayland_server::Display;
+use smithay::wayland::socket::ListeningSocketSource;
+
+use compositor::manager::{ClientState, WindowManager};
 
 fn main() {
-    // Initialize the Wayland display
-    let display = Display::new().unwrap();
-    
-    // Create our compositor state
-    let mut window_manager = compositor::manager::WindowManager::new(&display.handle());
-    let mut shell_state = compositor::shell::ShellState::new(&display.handle());
-    
-    // Initialize the event loop
-    let event_loop = EventLoop::try_new().unwrap();
-    
-    // Start the compositor
-    println!("Starting Nyarla DE compositor...");
-    
-    // Run the event loop (this will block)
-    event_loop.run(None, &mut (), |_| {}).unwrap();
+    let mut display: Display<WindowManager> = Display::new().unwrap();
+    let mut dh = display.handle();
+
+    let mut state = WindowManager::new(&dh);
+
+    let mut event_loop: EventLoop<WindowManager> = EventLoop::try_new().unwrap();
+
+    let socket = ListeningSocketSource::new_auto().unwrap();
+    let socket_name = socket.socket_name().to_os_string();
+
+    event_loop
+    .handle()
+    .insert_source(socket, move |stream, _, _state| {
+        dh.insert_client(stream, Arc::new(ClientState::default()))
+        .unwrap();
+    })
+    .unwrap();
+
+    println!("Starting Nyarla DE compositor on {:?}...", socket_name);
+
+    loop {
+        event_loop
+        .dispatch(Some(Duration::from_millis(16)), &mut state)
+        .unwrap();
+        display.dispatch_clients(&mut state).unwrap();
+        display.flush_clients().unwrap();
+    }
 }
