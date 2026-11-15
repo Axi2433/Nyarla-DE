@@ -1,10 +1,9 @@
 mod compositor;
 
-use smithay::{
-    backend::renderer::{gles::GlesRenderer, Renderer},
-    reexports::wayland_server::{Display, DisplayHandle},
-    wayland::compositor::CompositorState,
-    wayland::shell::xdg::XdgShellState,
+use smithay::reexports::wayland_server::Display;
+
+let mut display: Display<WindowManager> = Display::new().unwrap();
+let mut state = WindowManager::new(&display.handle());
 };
 use calloop::EventLoop;
 use std::sync::Arc;

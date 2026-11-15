@@ -6,8 +6,4 @@ edition = "2021"
 [dependencies]
 smithay = "0.7.0"
 calloop = "0.10"
-wayland-client = "0.30"
-wayland-server = "0.30"
 cgmath = "0.18"
-image = "0.24"
-input = "0.7"
